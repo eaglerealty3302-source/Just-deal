@@ -8,6 +8,7 @@ import { DealInfoCard } from "@/components/dealDetails/DealInfoCard";
 import { DealActionsCard } from "@/components/dealDetails/DealActionsCard";
 import { DealDetailsForm } from "@/components/dealDetails/DealDetailsForm";
 import { RentRollModule } from "@/features/rentRoll/RentRollModule";
+import { FirstPassTab } from "@/components/dealDetails/FirstPassTab";
 import { LocationCard } from "@/components/dealDetails/LocationCard";
 import { CharacteristicsCard } from "@/components/dealDetails/CharacteristicsCard";
 import { AmenitiesCard } from "@/components/dealDetails/AmenitiesCard";
@@ -161,7 +162,11 @@ export default function DealDetailPage() {
           </div>
         )}
 
-        {!isRentRollView && activeTab !== "overview" && (
+        {activeTab === "firstpass" && dealId && (
+          <FirstPassTab dealId={dealId} />
+        )}
+
+        {!isRentRollView && activeTab !== "overview" && activeTab !== "firstpass" && (
           <div className="flex-1 flex flex-col items-center justify-center py-32 text-center">
             <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-6">
               <FileText className="h-10 w-10 text-muted-foreground/30" />
@@ -169,7 +174,6 @@ export default function DealDetailPage() {
             <h3 className="text-xl font-serif font-bold mb-2">Module Coming Soon</h3>
             <p className="text-muted-foreground max-w-xs mx-auto">
               {activeTab === "operating-statement" && "Operating Statement analysis is currently in development."}
-              {activeTab === "firstpass" && "FirstPass automated underwriting will be available in the next update."}
               {activeTab === "sharing" && "Collaboration and sharing features are being finalized."}
             </p>
             <button onClick={() => setActiveTab("overview")} className="mt-6 text-primary font-bold hover:underline">
