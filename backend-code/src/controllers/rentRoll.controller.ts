@@ -64,6 +64,14 @@ export async function uploadRentRoll(req: Request, res: Response) {
     const headers = rawRows[0].map((h: any) => String(h || '').trim());
     const dataRows = rawRows.slice(1).filter((r: any[]) => r.some(c => c != null && c !== ''));
 
+    // Basic Anomaly Detection (Placeholder for RedIQ-like feature)
+    const anomalies = [];
+    dataRows.forEach((row, idx) => {
+      // Example: Check for missing unit numbers or extreme rent values
+      const unitNo = row[headers.indexOf('unit_no')];
+      if (!unitNo) anomalies.push({ row: idx + 1, type: 'Missing Unit Number' });
+    });
+
     // Create rent roll record
     const { data: rentRoll, error: rrErr } = await supabase
       .from('rent_rolls')
@@ -73,6 +81,9 @@ export async function uploadRentRoll(req: Request, res: Response) {
         total_units: totalUnits || dataRows.length,
         processing_status: 'uploaded',
         raw_data: { headers, rows: dataRows },
+        anomalies: anomalies,
+        has_anomalies: anomalies.length > 0,
+        ai_summary: `Automatically processed ${dataRows.length} units. ${anomalies.length} potential issues detected.`,
       })
       .select()
       .single();
