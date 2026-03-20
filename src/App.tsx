@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import DealsPage from "./pages/DealsPage";
 import DealDetailPage from "./pages/DealDetailPage";
+import FirstPassPage from "./pages/FirstPassPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,6 +19,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<DealsPage />} />
           <Route path="/deals/:dealId" element={<DealDetailPage />} />
+          <Route path="/deals/:id/first-pass" element={<FirstPassPage />} />
+          <Route path="/first-pass" element={<FirstPassPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

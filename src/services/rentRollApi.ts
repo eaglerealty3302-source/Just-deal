@@ -335,3 +335,18 @@ export const rentRollCaptureApi = {
     return res.data;
   },
 };
+
+export interface ProjectionResult {
+  suite: string;
+  tenant: string;
+  sqft: number;
+  projections: Record<number, { amount: number; type: 'market' | 'transition' | 'lease' }>;
+}
+
+/** Get projections (FirstPass) */
+export const getProjections = async (dealId: string, marketRentPsf: number, annualIncrementPct: number) => {
+  const res = await rrRequest<{ success: boolean; data: ProjectionResult[] }>(
+    `/deals/${dealId}/rent-roll/projections?market_rent_psf=${marketRentPsf}&annual_increment_pct=${annual_increment_pct}`
+  );
+  return res.data;
+};

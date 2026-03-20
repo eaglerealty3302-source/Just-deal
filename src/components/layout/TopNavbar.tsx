@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Deals", href: "/" },
+  { label: "FirstPass", href: "/first-pass" },
   { label: "Shared Deals", href: "/shared" },
   { label: "Comps", href: "/comps" },
   { label: "Research", href: "/research" },

@@ -477,3 +477,75 @@ export async function getFloorPlanSummary(req: Request, res: Response) {
     return success(res, summary);
   } catch (err: any) { return error(res, err.message); }
 }
+
+import { spawn } from 'child_process';
+import path from 'path';
+
+export async function getProjections(req: Request, res: Response) {
+  try {
+    const { dealId } = req.params;
+    const { market_rent_psf = 15.0, annual_increment_pct = 0.03 } = req.query;
+
+    // Get latest rent roll units
+    const { data: rr } = await supabase
+      .from('rent_rolls')
+      .select('id')
+      .eq('deal_pk', dealId)
+      .order('uploaded_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!rr) return success(res, [], 'No rent roll found');
+
+    const { data: units } = await supabase
+      .from('rent_roll_units')
+      .select('*')
+      .eq('rent_roll_id', rr.id);
+
+    if (!units || units.length === 0) return success(res, [], 'No units found');
+
+    // Prepare data for Python script
+    const tenants = units.map(u => ({
+      suite: u.unit_no,
+      tenant: u.tenant_name || 'Vacant',
+      sqft: u.net_sqft || 0,
+      base_rent_psf: u.contractual_rent || 0,
+      lease_end: u.lease_end_date,
+      step_rents: u.rent_escalations || []
+    }));
+
+    const inputData = {
+      tenants,
+      analysis_years: [2025, 2026, 2027, 2028, 2029, 2030, 2031],
+      market_rent_psf: parseFloat(market_rent_psf as string),
+      annual_increment_pct: parseFloat(annual_increment_pct as string)
+    };
+
+    // Call Python script
+    const pythonProcess = spawn('python3', [path.join(__dirname, '../utils/nnn_projections.py')]);
+    let output = '';
+    let errorOutput = '';
+
+    pythonProcess.stdout.on('data', (data) => { output += data.toString(); });
+    pythonProcess.stderr.on('data', (data) => { errorOutput += data.toString(); });
+
+    pythonProcess.on('close', (code) => {
+      if (code !== 0) {
+        console.error('Python error:', errorOutput);
+        return error(res, 'Projection calculation failed');
+      }
+      try {
+        const results = JSON.parse(output);
+        return success(res, results);
+      } catch (e) {
+        return error(res, 'Failed to parse projection results');
+      }
+    });
+
+    pythonProcess.stdin.write(JSON.stringify(inputData));
+    pythonProcess.stdin.end();
+
+  } catch (err: any) {
+    return error(res, err.message);
+  }
+}

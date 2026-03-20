@@ -56,4 +56,7 @@ router.get('/:dealId/rent-roll/:rrId/dashboard', ctrl.getDashboard);
 // Floor plan summary
 router.get('/:dealId/rent-roll/:rrId/floor-plan-summary', ctrl.getFloorPlanSummary);
 
+// Projections (FirstPass)
+router.get('/:dealId/rent-roll/projections', ctrl.getProjections);
+
 export default router;
