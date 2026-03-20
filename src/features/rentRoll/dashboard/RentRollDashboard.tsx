@@ -8,6 +8,7 @@ import { LineChartWidget } from "./charts/LineChartWidget";
 import { KPISummaryRow } from "./KPISummaryRow";
 import { AnomalyPanel } from "./AnomalyPanel";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GanttChartWidget } from "./charts/GanttChartWidget";
 
 interface RentRollDashboardProps {
   dealId: string;
@@ -180,6 +181,13 @@ export function RentRollDashboard({ dealId, rentRollId, onBack, onNavigate }: Re
                     xKey="name"
                     emptyMessage="No Data Available For Occupancy Status"
                   />
+                </ChartCard>
+              </div>
+
+              {/* New Row for Gantt Chart */}
+              <div className="grid grid-cols-1 gap-6">
+                <ChartCard title="Lease Timeline (Gantt)">
+                  <GanttChartWidget data={dashboard?.lease_timeline || []} />
                 </ChartCard>
               </div>
 

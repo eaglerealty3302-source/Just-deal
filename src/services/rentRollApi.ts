@@ -122,6 +122,13 @@ export interface RentRollSettings {
   renovationStatuses: string[];
 }
 
+export interface LeaseTimelineRow {
+  unit_no: string;
+  start: string;
+  end: string;
+  tenant: string;
+}
+
 export interface DashboardData {
   // Donut charts
   unit_types: ChartDataPoint[];
@@ -156,6 +163,7 @@ export interface DashboardData {
   leasing_trends: { month: string; leases: number }[];
   // Feature flags / settings
   settings: RentRollSettings;
+  lease_timeline: LeaseTimelineRow[];
 }
 
 export interface FloorPlanSummaryRow {
